@@ -6,6 +6,11 @@ app.get("/", (req, res) => {
   res.send("LK MindLink Server Running");
 });
 
-app.listen(5000, () => {
-  console.log("Server started on port 5000");
+// Handle all other routes
+app.get("*", (req, res) => {
+  res.send("Route not found");
+});
+
+app.listen(process.env.PORT || 5000, () => {
+  console.log("Server started");
 });

@@ -7,12 +7,11 @@ app.get("/", (req, res) => {
   res.send("LK MindLink Server Running");
 });
 
-// Catch-all
+// Catch-all route
 app.get("*", (req, res) => {
   res.send("Route not found");
 });
 
-// IMPORTANT: Render requires this
 const PORT = process.env.PORT || 10000;
 
 app.listen(PORT, "0.0.0.0", () => {

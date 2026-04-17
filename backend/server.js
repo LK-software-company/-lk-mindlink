@@ -2,14 +2,38 @@ const express = require("express");
 
 const app = express();
 
-// Root route
-app.get("/", (req, res) => {
-  res.send("LK MindLink Server Running");
+app.use(express.json()); // IMPORTANT for handling data
+
+// Temporary storage (we'll use database later)
+let users = [];
+
+// Register
+app.post("/register", (req, res) => {
+  const { username, password } = req.body;
+
+  users.push({ username, password });
+
+  res.send("User registered");
 });
 
-// Catch-all route
-app.get("*", (req, res) => {
-  res.send("Route not found");
+// Login
+app.post("/login", (req, res) => {
+  const { username, password } = req.body;
+
+  const user = users.find(
+    (u) => u.username === username && u.password === password
+  );
+
+  if (user) {
+    res.send("Login successful");
+  } else {
+    res.send("Invalid credentials");
+  }
+});
+
+// Test route
+app.get("/", (req, res) => {
+  res.send("LK MindLink Server Running");
 });
 
 const PORT = process.env.PORT || 10000;

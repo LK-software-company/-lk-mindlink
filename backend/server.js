@@ -1,28 +1,37 @@
 const express = require("express");
+const mongoose = require("mongoose");
 
 const app = express();
+app.use(express.json());
 
-app.use(express.json()); // IMPORTANT for handling data
+// 🔗 CONNECT TO MONGODB
+mongoose.connect("mongodb+srv://lkadmin:lksoftwarecompany053409@lk-mindlink.lbadwhb.mongodb.net/lk_mindlink_db?retryWrites=true&w=majority")
+.then(() => console.log("MongoDB Connected"))
+.catch(err => console.log(err));
 
-// Temporary storage (we'll use database later)
-let users = [];
+// 👤 USER MODEL
+const UserSchema = new mongoose.Schema({
+  username: String,
+  password: String
+});
 
-// Register
-app.post("/register", (req, res) => {
+const User = mongoose.model("User", UserSchema);
+
+// 📝 REGISTER
+app.post("/register", async (req, res) => {
   const { username, password } = req.body;
 
-  users.push({ username, password });
+  const newUser = new User({ username, password });
+  await newUser.save();
 
   res.send("User registered");
 });
 
-// Login
-app.post("/login", (req, res) => {
+// 🔐 LOGIN
+app.post("/login", async (req, res) => {
   const { username, password } = req.body;
 
-  const user = users.find(
-    (u) => u.username === username && u.password === password
-  );
+  const user = await User.findOne({ username, password });
 
   if (user) {
     res.send("Login successful");
@@ -31,7 +40,7 @@ app.post("/login", (req, res) => {
   }
 });
 
-// Test route
+// TEST
 app.get("/", (req, res) => {
   res.send("LK MindLink Server Running");
 });

@@ -1,20 +1,50 @@
-const express = require("express");
+<!DOCTYPE html>
+<html>
+<head>
+  <title>LK MindLink</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-black text-white flex flex-col items-center justify-center h-screen">
 
-const app = express();
+  <h1 class="text-3xl text-red-500 mb-4">LK MindLink</h1>
 
-// Root route
-app.get("/", (req, res) => {
-  res.send("LK MindLink Server Running");
-});
+  <input id="username" placeholder="Username" class="mb-2 p-2 text-black">
+  <input id="password" type="password" placeholder="Password" class="mb-2 p-2 text-black">
 
-// Catch-all
-app.get("*", (req, res) => {
-  res.send("Route not found");
-});
+  <button onclick="register()" class="bg-green-600 px-4 py-2 mb-2">Register</button>
+  <button onclick="login()" class="bg-blue-600 px-4 py-2">Login</button>
 
-// IMPORTANT: Render requires this
-const PORT = process.env.PORT || 10000;
+  <p id="result" class="mt-4"></p>
 
-app.listen(PORT, "0.0.0.0", () => {
-  console.log(`Server running on port ${PORT}`);
-});
+  <script>
+    const URL = "https://lk-mindlink.onrender.com";
+
+    async function register() {
+      const username = document.getElementById("username").value;
+      const password = document.getElementById("password").value;
+
+      const res = await fetch(URL + "/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password })
+      });
+
+      document.getElementById("result").innerText = await res.text();
+    }
+
+    async function login() {
+      const username = document.getElementById("username").value;
+      const password = document.getElementById("password").value;
+
+      const res = await fetch(URL + "/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password })
+      });
+
+      document.getElementById("result").innerText = await res.text();
+    }
+  </script>
+
+</body>
+</html>

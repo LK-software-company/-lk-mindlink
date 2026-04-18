@@ -5,39 +5,42 @@ const app = express();
 app.use(express.json());
 
 // 🔗 CONNECT TO MONGODB
-mongoose.connect("mongodb+srv://lkadmin:lksoftwarecompany053409@lk-mindlink.lbadwhb.mongodb.net/lk_mindlink_db?retryWrites=true&w=majority", {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-})
+mongoose.connect("mongodb+srv://lkadmin:lksoftwarecompany053409@lk-mindlink.lbadwhb.mongodb.net/lk_mindlink_db?retryWrites=true&w=majority")
 .then(() => console.log("MongoDB Connected"))
 .catch(err => console.log("Mongo Error:", err));
 
-// 👤 USER SCHEMA & MODEL
+// 👤 USER SCHEMA
 const UserSchema = new mongoose.Schema({
-  username: String,
-  password: String
+  username: { type: String, required: true },
+  password: { type: String, required: true }
 });
 
 const User = mongoose.model("User", UserSchema);
 
-// 📝 REGISTER ROUTE
+// 📝 REGISTER
 app.post("/register", async (req, res) => {
-  const { username, password } = req.body;
-
   try {
+    const { username, password } = req.body;
+
+    const existingUser = await User.findOne({ username });
+    if (existingUser) {
+      return res.send("User already exists");
+    }
+
     const newUser = new User({ username, password });
     await newUser.save();
+
     res.send("User registered");
   } catch (err) {
     res.send("Error registering user");
   }
 });
 
-// 🔐 LOGIN ROUTE
+// 🔐 LOGIN
 app.post("/login", async (req, res) => {
-  const { username, password } = req.body;
-
   try {
+    const { username, password } = req.body;
+
     const user = await User.findOne({ username, password });
 
     if (user) {
@@ -50,7 +53,7 @@ app.post("/login", async (req, res) => {
   }
 });
 
-// 🌐 TEST ROUTE
+// 🌐 TEST
 app.get("/", (req, res) => {
   res.send("LK MindLink Server Running");
 });

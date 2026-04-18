@@ -16,8 +16,8 @@
 
     <!-- Tabs -->
     <div class="flex mb-4">
-      <button onclick="showLogin()" class="w-1/2 bg-red-600 py-2" id="loginTab">Login</button>
-      <button onclick="showRegister()" class="w-1/2 bg-gray-700 py-2" id="registerTab">Sign Up</button>
+      <button onclick="showLogin()" class="w-1/2 bg-red-600 py-2">Login</button>
+      <button onclick="showRegister()" class="w-1/2 bg-gray-700 py-2">Sign Up</button>
     </div>
 
     <!-- Inputs -->
@@ -25,7 +25,7 @@
     <input id="password" type="password" placeholder="Password" class="w-full mb-4 p-2 text-black rounded">
 
     <!-- Action Button -->
-    <button id="actionBtn" onclick="login()" class="w-full bg-red-600 py-2 rounded">
+    <button id="actionBtn" class="w-full bg-red-600 py-2 rounded">
       Login
     </button>
 
@@ -48,6 +48,7 @@ function showRegister() {
   document.getElementById("actionBtn").innerText = "Sign Up";
 }
 
+// ✅ LOGIN FUNCTION (UPDATED)
 async function login() {
   const username = document.getElementById("username").value;
   const password = document.getElementById("password").value;
@@ -58,9 +59,17 @@ async function login() {
     body: JSON.stringify({ username, password })
   });
 
-  document.getElementById("result").innerText = await res.text();
+  const result = await res.text();
+  document.getElementById("result").innerText = result;
+
+  // 👉 SAVE USER + REDIRECT
+  if (result === "Login successful") {
+    localStorage.setItem("user", username);
+    window.location.href = "world.html";
+  }
 }
 
+// REGISTER FUNCTION
 async function register() {
   const username = document.getElementById("username").value;
   const password = document.getElementById("password").value;
@@ -74,7 +83,7 @@ async function register() {
   document.getElementById("result").innerText = await res.text();
 }
 
-// Switch action based on mode
+// BUTTON LOGIC
 document.getElementById("actionBtn").onclick = () => {
   if (mode === "login") login();
   else register();

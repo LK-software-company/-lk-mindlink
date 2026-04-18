@@ -7,39 +7,32 @@
 
 <body class="bg-gradient-to-br from-black via-gray-900 to-black flex items-center justify-center min-h-screen">
 
-  <!-- CARD -->
   <div class="bg-white rounded-xl shadow-xl w-[350px] p-8 text-center">
 
-    <!-- NAME ONLY (logo removed) -->
     <div class="mb-6">
       <h1 class="text-xl font-bold text-black">LK MindLink</h1>
     </div>
 
-    <!-- TITLE -->
     <h2 class="text-2xl font-semibold mb-1 text-black">Sign up</h2>
     <p class="text-gray-500 mb-6">Start your journey with LK MindLink</p>
 
-    <!-- INPUTS -->
     <input id="username" placeholder="Username"
       class="w-full mb-3 p-3 border rounded-lg text-black">
 
     <input id="password" type="password" placeholder="Password"
       class="w-full mb-4 p-3 border rounded-lg text-black">
 
-    <!-- MAIN BUTTON -->
     <button id="actionBtn"
       class="w-full bg-blue-600 text-white py-3 rounded-lg mb-4 hover:bg-blue-700">
       Create account
     </button>
 
-    <!-- DIVIDER -->
     <div class="flex items-center gap-2 my-4">
       <hr class="flex-1">
       <span class="text-gray-400 text-sm">or</span>
       <hr class="flex-1">
     </div>
 
-    <!-- SOCIAL -->
     <button class="w-full border py-2 rounded-lg mb-2 text-black">
       Sign in with Google
     </button>
@@ -48,14 +41,12 @@
       Sign in with Apple
     </button>
 
-    <!-- SWITCH -->
     <p class="mt-6 text-sm text-gray-500">
       Already have an account?
       <span onclick="showLogin()" class="text-blue-600 cursor-pointer">Log in</span>
     </p>
 
-    <!-- RESULT -->
-    <p id="result" class="mt-4 text-sm text-red-500"></p>
+    <p id="result" class="mt-4 text-sm"></p>
 
   </div>
 
@@ -64,15 +55,28 @@ const URL = "https://lk-mindlink.onrender.com";
 
 let mode = "register";
 
+// 🔁 AUTO REDIRECT IF LOGGED IN
+if (localStorage.getItem("user")) {
+  window.location.href = "world.html";
+}
+
+// SWITCH TO LOGIN
 function showLogin() {
   mode = "login";
   document.querySelector("h2").innerText = "Login";
   document.getElementById("actionBtn").innerText = "Login";
 }
 
+// LOGIN
 async function login() {
   const username = document.getElementById("username").value;
   const password = document.getElementById("password").value;
+
+  if (!username || !password) {
+    document.getElementById("result").innerText = "Fill all fields";
+    document.getElementById("result").style.color = "red";
+    return;
+  }
 
   const res = await fetch(URL + "/login", {
     method: "POST",
@@ -81,7 +85,10 @@ async function login() {
   });
 
   const result = await res.text();
+
   document.getElementById("result").innerText = result;
+  document.getElementById("result").style.color =
+    result === "Login successful" ? "green" : "red";
 
   if (result === "Login successful") {
     localStorage.setItem("user", username);
@@ -89,9 +96,16 @@ async function login() {
   }
 }
 
+// REGISTER
 async function register() {
   const username = document.getElementById("username").value;
   const password = document.getElementById("password").value;
+
+  if (!username || !password) {
+    document.getElementById("result").innerText = "Fill all fields";
+    document.getElementById("result").style.color = "red";
+    return;
+  }
 
   const res = await fetch(URL + "/register", {
     method: "POST",
@@ -99,9 +113,13 @@ async function register() {
     body: JSON.stringify({ username, password })
   });
 
-  document.getElementById("result").innerText = await res.text();
+  const result = await res.text();
+
+  document.getElementById("result").innerText = result;
+  document.getElementById("result").style.color = "green";
 }
 
+// BUTTON ACTION
 document.getElementById("actionBtn").onclick = () => {
   if (mode === "login") login();
   else register();

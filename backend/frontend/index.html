@@ -4,47 +4,82 @@
   <title>LK MindLink</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-black text-white flex flex-col items-center justify-center h-screen">
 
-  <h1 class="text-3xl text-red-500 mb-4">LK MindLink</h1>
+<body class="bg-black text-white flex items-center justify-center h-screen">
 
-  <input id="username" placeholder="Username" class="mb-2 p-2 text-black">
-  <input id="password" type="password" placeholder="Password" class="mb-2 p-2 text-black">
+  <div class="bg-gray-900 p-8 rounded-xl w-80 shadow-lg text-center">
 
-  <button onclick="register()" class="bg-green-600 px-4 py-2 mb-2">Register</button>
-  <button onclick="login()" class="bg-blue-600 px-4 py-2">Login</button>
+    <!-- Logo -->
+    <img src="logo.png" class="w-20 mx-auto mb-4">
 
-  <p id="result" class="mt-4"></p>
+    <h1 class="text-2xl text-red-500 mb-4">LK MindLink</h1>
 
-  <script>
-    const URL = "https://lk-mindlink.onrender.com";
+    <!-- Tabs -->
+    <div class="flex mb-4">
+      <button onclick="showLogin()" class="w-1/2 bg-red-600 py-2" id="loginTab">Login</button>
+      <button onclick="showRegister()" class="w-1/2 bg-gray-700 py-2" id="registerTab">Sign Up</button>
+    </div>
 
-    async function register() {
-      const username = document.getElementById("username").value;
-      const password = document.getElementById("password").value;
+    <!-- Inputs -->
+    <input id="username" placeholder="Username" class="w-full mb-2 p-2 text-black rounded">
+    <input id="password" type="password" placeholder="Password" class="w-full mb-4 p-2 text-black rounded">
 
-      const res = await fetch(URL + "/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password })
-      });
+    <!-- Action Button -->
+    <button id="actionBtn" onclick="login()" class="w-full bg-red-600 py-2 rounded">
+      Login
+    </button>
 
-      document.getElementById("result").innerText = await res.text();
-    }
+    <p id="result" class="mt-4 text-sm"></p>
 
-    async function login() {
-      const username = document.getElementById("username").value;
-      const password = document.getElementById("password").value;
+  </div>
 
-      const res = await fetch(URL + "/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password })
-      });
+<script>
+const URL = "https://lk-mindlink.onrender.com";
 
-      document.getElementById("result").innerText = await res.text();
-    }
-  </script>
+let mode = "login";
+
+function showLogin() {
+  mode = "login";
+  document.getElementById("actionBtn").innerText = "Login";
+}
+
+function showRegister() {
+  mode = "register";
+  document.getElementById("actionBtn").innerText = "Sign Up";
+}
+
+async function login() {
+  const username = document.getElementById("username").value;
+  const password = document.getElementById("password").value;
+
+  const res = await fetch(URL + "/login", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ username, password })
+  });
+
+  document.getElementById("result").innerText = await res.text();
+}
+
+async function register() {
+  const username = document.getElementById("username").value;
+  const password = document.getElementById("password").value;
+
+  const res = await fetch(URL + "/register", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ username, password })
+  });
+
+  document.getElementById("result").innerText = await res.text();
+}
+
+// Switch action based on mode
+document.getElementById("actionBtn").onclick = () => {
+  if (mode === "login") login();
+  else register();
+};
+</script>
 
 </body>
 </html>

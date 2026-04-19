@@ -1,91 +1,67 @@
-const express = require("express");
-const mongoose = require("mongoose");
+// LOGIN FUNCTION
+async function login() {
+  const username = document.getElementById("username").value;
+  const password = document.getElementById("password").value;
 
-const express = require("express");
-const app = express();
-app.use(express.json());
-
-// 🔗 CONNECT TO MONGODB
-mongoose.connect("mongodb+srv://lkadmin:lksoftwarecompany053409@lk-mindlink.lbadwhb.mongodb.net/lk_mindlink_db?retryWrites=true&w=majority")
-.then(() => console.log("MongoDB Connected"))
-.catch(err => console.log("Mongo Error:", err));
-
-// 👤 USER SCHEMA
-const UserSchema = new mongoose.Schema({
-  username: { type: String, required: true },
-  password: { type: String, required: true }
-});
-
-const User = mongoose.model("User", UserSchema);
-
-// 📝 REGISTER
-app.post("/register", async (req, res) => {
-  try {
-    const { username, password } = req.body;
-
-    const existingUser = await User.findOne({ username });
-    if (existingUser) {
-      return res.send("User already exists");
-    }
-
-    const newUser = new User({ username, password });
-    await newUser.save();
-
-    res.send("User registered");
-  } catch (err) {
-    res.send("Error registering user");
+  if (!username || !password) {
+    document.getElementById("result").innerText = "Fill all fields";
+    document.getElementById("result").style.color = "red";
+    return;
   }
-});
 
-// 🔐 LOGIN
-app.post("/login", async (req, res) => {
   try {
-    const { username, password } = req.body;
+    const res = await fetch(URL + "/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username, password })
+    });
 
-    const user = await User.findOne({ username, password });
+    const result = await res.text();
+    document.getElementById("result").innerText = result;
 
-    if (user) {
-      res.send("Login successful");
+    if (res.ok) {  // ✅ Check HTTP status instead of text
+      document.getElementById("result").style.color = "green";
+      localStorage.setItem("user", username);
+      window.location.href = "world.html";
     } else {
-      res.send("Invalid credentials");
+      document.getElementById("result").style.color = "red";
     }
   } catch (err) {
-    res.send("Error logging in");
+    document.getElementById("result").innerText = "Server error. Try again.";
+    document.getElementById("result").style.color = "red";
   }
-});
+}
 
-// 🌐 TEST
-app.get("/", (req, res) => {
-  res.send("LK MindLink Server Running");
-});
+// REGISTER FUNCTION
+async function register() {
+  const username = document.getElementById("username").value;
+  const password = document.getElementById("password").value;
 
-const PORT = process.env.PORT || 10000;
-
-app.listen(PORT, "0.0.0.0", () => {
-  console.log(`Server running on port ${PORT}`);
-});
-const PostSchema = new mongoose.Schema({
-  username: String,
-  text: String,
-  createdAt: { type: Date, default: Date.now }
-});
-
-const Post = mongoose.model("Post", PostSchema);
-app.post("/posts", async (req, res) => {
-  const { username, text } = req.body;
+  if (!username || !password) {
+    document.getElementById("result").innerText = "Fill all fields";
+    document.getElementById("result").style.color = "red";
+    return;
+  }
 
   try {
-    const newPost = new Post({ username, text });
-    await newPost.save();
-    res.send("Post created");
+    const res = await fetch(URL + "/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username, password })
+    });
+
+    const result = await res.text();
+    document.getElementById("result").innerText = result;
+
+    if (res.ok) {  // ✅ Auto-login after register
+      document.getElementById("result").style.color = "green";
+      localStorage.setItem("user", username);
+      window.location.href = "world.html";  // ✅ Now redirects!
+    } else {
+      document.getElementById("result").style.color = "red";
+    }
   } catch (err) {
-    res.send("Error creating post");
+    document.getElementById("result").innerText = "Server error. Try again.";
+    document.getElementById("result").style.color = "red";
   }
-});app.get("/posts", async (req, res) => {
-  try {
-    const posts = await Post.find().sort({ createdAt: -1 });
-    res.json(posts);
-  } catch (err) {
-    res.send("Error fetching posts");
-  }
-});
+}

@@ -63,3 +63,28 @@ const PORT = process.env.PORT || 10000;
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`Server running on port ${PORT}`);
 });
+const PostSchema = new mongoose.Schema({
+  username: String,
+  text: String,
+  createdAt: { type: Date, default: Date.now }
+});
+
+const Post = mongoose.model("Post", PostSchema);
+app.post("/posts", async (req, res) => {
+  const { username, text } = req.body;
+
+  try {
+    const newPost = new Post({ username, text });
+    await newPost.save();
+    res.send("Post created");
+  } catch (err) {
+    res.send("Error creating post");
+  }
+});app.get("/posts", async (req, res) => {
+  try {
+    const posts = await Post.find().sort({ createdAt: -1 });
+    res.json(posts);
+  } catch (err) {
+    res.send("Error fetching posts");
+  }
+});

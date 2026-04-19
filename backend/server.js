@@ -1,67 +1,68 @@
-// LOGIN FUNCTION
-async function login() {
-  const username = document.getElementById("username").value;
-  const password = document.getElementById("password").value;
+const express = require('express');
+const cors = require('cors');
+const mongoose = require('mongoose');
 
-  if (!username || !password) {
-    document.getElementById("result").innerText = "Fill all fields";
-    document.getElementById("result").style.color = "red";
-    return;
-  }
+const app = express();
 
+// ─── MIDDLEWARE ───────────────────────────────────────────
+app.use(cors());
+app.use(express.json());
+
+// ─── DATABASE CONNECTION ──────────────────────────────────
+mongoose.connect(process.env.MONGO_URI)
+  .then(() => console.log('✅ MongoDB connected'))
+  .catch(err => console.error('❌ MongoDB error:', err));
+
+// ─── USER SCHEMA ──────────────────────────────────────────
+const userSchema = new mongoose.Schema({
+  username: { type: String, required: true, unique: true, trim: true },
+  password: { type: String, required: true },
+  createdAt: { type: Date, default: Date.now }
+});
+
+const User = mongoose.model('User', userSchema);
+
+// ─── REGISTER ─────────────────────────────────────────────
+app.post('/register', async (req, res) => {
   try {
-    const res = await fetch(URL + "/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, password })
-    });
+    const { username, password } = req.body;
 
-    const result = await res.text();
-    document.getElementById("result").innerText = result;
+    if (!username || !password)
+      return res.status(400).send('Username and password are required');
 
-    if (res.ok) {  // ✅ Check HTTP status instead of text
-      document.getElementById("result").style.color = "green";
-      localStorage.setItem("user", username);
-      window.location.href = "world.html";
-    } else {
-      document.getElementById("result").style.color = "red";
-    }
+    const exists = await User.findOne({ username });
+    if (exists)
+      return res.status(400).send('Username already taken');
+
+    await User.create({ username, password });
+    res.status(201).send('Account created');
+
   } catch (err) {
-    document.getElementById("result").innerText = "Server error. Try again.";
-    document.getElementById("result").style.color = "red";
+    console.error(err);
+    res.status(500).send('Server error');
   }
-}
+});
 
-// REGISTER FUNCTION
-async function register() {
-  const username = document.getElementById("username").value;
-  const password = document.getElementById("password").value;
-
-  if (!username || !password) {
-    document.getElementById("result").innerText = "Fill all fields";
-    document.getElementById("result").style.color = "red";
-    return;
-  }
-
+// ─── LOGIN ────────────────────────────────────────────────
+app.post('/login', async (req, res) => {
   try {
-    const res = await fetch(URL + "/register", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, password })
-    });
+    const { username, password } = req.body;
 
-    const result = await res.text();
-    document.getElementById("result").innerText = result;
+    if (!username || !password)
+      return res.status(400).send('Username and password are required');
 
-    if (res.ok) {  // ✅ Auto-login after register
-      document.getElementById("result").style.color = "green";
-      localStorage.setItem("user", username);
-      window.location.href = "world.html";  // ✅ Now redirects!
-    } else {
-      document.getElementById("result").style.color = "red";
-    }
+    const user = await User.findOne({ username, password });
+    if (!user)
+      return res.status(401).send('Invalid username or password');
+
+    res.status(200).send('Login successful');
+
   } catch (err) {
-    document.getElementById("result").innerText = "Server error. Try again.";
-    document.getElementById("result").style.color = "red";
+    console.error(err);
+    res.status(500).send('Server error');
   }
-}
+});
+
+// ─── START SERVER ─────────────────────────────────────────
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));

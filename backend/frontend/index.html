@@ -9,43 +9,35 @@
 
   <div class="bg-white rounded-xl shadow-xl w-[350px] p-8 text-center">
 
+    <!-- APP NAME -->
     <div class="mb-6">
       <h1 class="text-xl font-bold text-black">LK MindLink</h1>
     </div>
 
+    <!-- TITLE -->
     <h2 class="text-2xl font-semibold mb-1 text-black">Sign up</h2>
     <p class="text-gray-500 mb-6">Start your journey with LK MindLink</p>
 
+    <!-- INPUTS -->
     <input id="username" placeholder="Username"
       class="w-full mb-3 p-3 border rounded-lg text-black">
 
     <input id="password" type="password" placeholder="Password"
       class="w-full mb-4 p-3 border rounded-lg text-black">
 
+    <!-- BUTTON -->
     <button id="actionBtn"
       class="w-full bg-blue-600 text-white py-3 rounded-lg mb-4 hover:bg-blue-700">
       Create account
     </button>
 
-    <div class="flex items-center gap-2 my-4">
-      <hr class="flex-1">
-      <span class="text-gray-400 text-sm">or</span>
-      <hr class="flex-1">
-    </div>
-
-    <button class="w-full border py-2 rounded-lg mb-2 text-black">
-      Sign in with Google
-    </button>
-
-    <button class="w-full bg-black text-white py-2 rounded-lg">
-      Sign in with Apple
-    </button>
-
-    <p class="mt-6 text-sm text-gray-500">
+    <!-- SWITCH -->
+    <p class="mt-4 text-sm text-gray-500">
       Already have an account?
       <span onclick="showLogin()" class="text-blue-600 cursor-pointer">Log in</span>
     </p>
 
+    <!-- RESULT -->
     <p id="result" class="mt-4 text-sm"></p>
 
   </div>
@@ -55,11 +47,6 @@ const URL = "https://lk-mindlink.onrender.com";
 
 let mode = "register";
 
-// 🔁 AUTO REDIRECT IF LOGGED IN
-if (localStorage.getItem("user")) {
-  window.location.href = "world.html";
-}
-
 // SWITCH TO LOGIN
 function showLogin() {
   mode = "login";
@@ -67,7 +54,7 @@ function showLogin() {
   document.getElementById("actionBtn").innerText = "Login";
 }
 
-// LOGIN
+// LOGIN FUNCTION
 async function login() {
   const username = document.getElementById("username").value;
   const password = document.getElementById("password").value;
@@ -85,18 +72,18 @@ async function login() {
   });
 
   const result = await res.text();
-
   document.getElementById("result").innerText = result;
-  document.getElementById("result").style.color =
-    result === "Login successful" ? "green" : "red";
 
   if (result === "Login successful") {
+    document.getElementById("result").style.color = "green";
     localStorage.setItem("user", username);
     window.location.href = "world.html";
+  } else {
+    document.getElementById("result").style.color = "red";
   }
 }
 
-// REGISTER
+// REGISTER FUNCTION
 async function register() {
   const username = document.getElementById("username").value;
   const password = document.getElementById("password").value;
@@ -114,12 +101,11 @@ async function register() {
   });
 
   const result = await res.text();
-
   document.getElementById("result").innerText = result;
   document.getElementById("result").style.color = "green";
 }
 
-// BUTTON ACTION
+// BUTTON CONTROL
 document.getElementById("actionBtn").onclick = () => {
   if (mode === "login") login();
   else register();

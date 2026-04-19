@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>World - LK MindLink</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-black text-white min-h-screen">
+
+  <!-- HEADER -->
+  <div class="flex justify-between items-center p-4 border-b border-gray-800">
+    <h1 class="text-xl text-red-500">LK MindLink</h1>
+    <button onclick="logout()" class="bg-red-600 px-3 py-1 rounded">
+      Logout
+    </button>
+  </div>
+
+  <!-- USER -->
+  <div class="p-4">
+    <p id="userDisplay" class="text-gray-400 mb-4"></p>
+
+    <!-- POST INPUT -->
+    <div class="bg-gray-900 p-4 rounded-lg">
+      <textarea id="postInput" placeholder="What's on your mind?" 
+        class="w-full p-2 text-black rounded mb-2"></textarea>
+
+      <button onclick="addPost()" class="bg-red-600 px-4 py-2 rounded">
+        Transmit
+      </button>
+    </div>
+  </div>
+
+  <!-- FEED -->
+  <div id="feed" class="p-4 space-y-3"></div>
+
+<script>
+const URL = "https://lk-mindlink.onrender.com";
+const user = localStorage.getItem("user");
+
+if (!user) {
+  window.location.href = "index.html";
+}
+
+document.getElementById("userDisplay").innerText = "Logged in as: " + user;
+
+// LOAD POSTS
+async function loadPosts() {
+  const res = await fetch(URL + "/posts");
+  const posts = await res.json();
+
+  const feed = document.getElementById("feed");
+  feed.innerHTML = "";
+
+  posts.forEach(post => {
+    const div = document.createElement("div");
+    div.className = "bg-gray-800 p-3 rounded";
+
+    div.innerHTML = `
+      <p class="text-red-400 text-sm">${post.username}</p>
+      <p>${post.text}</p>
+    `;
+
+    feed.appendChild(div);
+  });
+}
+
+// ADD POST
+async function addPost() {
+  const text = document.getElementById("postInput").value;
+
+  if (!text) return;
+
+  await fetch(URL + "/posts", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ username: user, text })
+  });
+
+  document.getElementById("postInput").value = "";
+
+  loadPosts();
+}
+
+// LOGOUT
+function logout() {
+  localStorage.removeItem("user");
+  window.location.href = "index.html";
+}
+
+// AUTO LOAD
+loadPosts();
+</script>
+
+</body>
+</html>

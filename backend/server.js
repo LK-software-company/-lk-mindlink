@@ -10,24 +10,24 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// ─── DEBUG (IMPORTANT) ───────────────────────
-console.log("MONGO URI:", process.env.MONGODB_URI ? "SET" : "NOT SET");
-
-// ─── DATABASE ────────────────────────────────
+// ─── DATABASE ───────────────────────────────
 mongoose.connect(process.env.MONGODB_URI)
-  .then(() => console.log("✅ MongoDB connected"))
-  .catch(err => {
-    console.log("❌ MongoDB connection failed:");
-    console.log(err.message);
+  .then(() => {
+    console.log("✅ MongoDB connected");
+  })
+  .catch((err) => {
+    console.log("❌ FULL MONGO ERROR:");
+    console.log(err);
   });
 
-// ─── MODELS ──────────────────────────────────
+// ─── USER MODEL ─────────────────────────────
 const User = mongoose.model("User", new mongoose.Schema({
   username: { type: String, required: true, unique: true, trim: true },
   password: { type: String, required: true },
   createdAt: { type: Date, default: Date.now }
 }));
 
+// ─── POST MODEL ─────────────────────────────
 const Post = mongoose.model("Post", new mongoose.Schema({
   username: String,
   text: String,
@@ -60,7 +60,7 @@ app.post("/register", async (req, res) => {
   }
 });
 
-// ─── LOGIN ──────────────────────────────────
+// ─── LOGIN ────────────────────────────────
 app.post("/login", async (req, res) => {
   try {
     const { username, password } = req.body;
@@ -76,7 +76,7 @@ app.post("/login", async (req, res) => {
   }
 });
 
-// ─── POSTS ──────────────────────────────────
+// ─── POSTS ────────────────────────────────
 app.post("/posts", async (req, res) => {
   try {
     const { username, text } = req.body;
@@ -103,9 +103,9 @@ app.get("/posts", async (req, res) => {
   }
 });
 
-// ─── SERVER START ───────────────────────────
+// ─── SERVER START ──────────────────────────
 const PORT = process.env.PORT || 10000;
 
-app.listen(PORT, () => {
+app.listen(PORT, "0.0.0.0", () => {
   console.log(`Server running on port ${PORT}`);
 });

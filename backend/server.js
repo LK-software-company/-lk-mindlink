@@ -8,7 +8,12 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-/* TEST ROUTE */
+/* ROOT ROUTE (fixes Cannot GET / on Render) */
+app.get("/", (req, res) => {
+  res.send("LK MindLink API is running 🚀");
+});
+
+/* TEST DB ROUTE */
 app.get("/test-db", async (req, res) => {
   try {
     const result = await pool.query("SELECT NOW()");
@@ -19,6 +24,9 @@ app.get("/test-db", async (req, res) => {
   }
 });
 
-app.listen(5000, () => {
-  console.log("Server running on port 5000");
+/* PORT SETUP (IMPORTANT for Render) */
+const PORT = process.env.PORT || 5000;
+
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });

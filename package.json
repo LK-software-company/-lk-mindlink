@@ -9,6 +9,20 @@
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^4.22.1",
-    "mongoose": "^9.4.1"
-  }
+    "mongoose": "^9.4.1",
+    "pg": "^8.20.0"
+  },
+  "description": "lk-mindlink Social app",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LK-software-company/-lk-mindlink.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/LK-software-company/-lk-mindlink/issues"
+  },
+  "homepage": "https://github.com/LK-software-company/-lk-mindlink#readme"
 }
